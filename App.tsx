@@ -1,20 +1,30 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from "expo-status-bar";
+import { NativeBaseProvider } from "native-base";
+import { useUser } from "./src/stores/user";
+import { Login } from "./src/screens/login";
+import { Home } from "./src/screens/home";
+import { BiometricsController } from "./src/controllers/biometrics-controller";
+import { useEffect } from "react";
 
 export default function App() {
+  const { set, ...user } = useUser();
+
+  useEffect(() => {
+    return () => {
+      set({ didLogout: true });
+    };
+  }, []);
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NativeBaseProvider>
+      <StatusBar style="light" />
+      {user?.id ? (
+        <>
+          <Home />
+          <BiometricsController />
+        </>
+      ) : (
+        <Login />
+      )}
+    </NativeBaseProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
